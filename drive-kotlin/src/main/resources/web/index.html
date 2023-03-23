@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FTL | Console</title>
+  <link rel="stylesheet" href="./main.css">
+  <link rel="stylesheet" href="./dracula.css">
+</head>
+<body>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script type="importmap">
+    {
+      "imports": {
+        "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+      }
+    }
+
+</script>
+
+<nav class="topmenu">
+  <h1>FTL <em>∞</em></h1>
+
+  <ul>
+    <li>option 1</li>
+    <li>option 2</li>
+    <li>option 3</li>
+  </ul>
+</nav>
+
+<section id="app">
+  <section class="workspace">
+    <section class="module">
+      <article class="verb" v-for="verb in verbs">{{ verb.name }}</article>
+    </section>
+  </section>
+  <nav class="botmenu">
+    <ul>
+      <li>option 1</li>
+      <li>option 2</li>
+      <li>option 3</li>
+    </ul>
+  </nav>
+</section>
+
+<script type="module">
+    import { createApp } from 'vue'
+    import FlightDeck from './flightdeck.js'
+
+    createApp(FlightDeck).mount('#app')
+
+
+</script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</body>
+</html>

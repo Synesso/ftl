@@ -10,7 +10,7 @@ import java.net.InetSocketAddress
 /**
  * Start FTL drive-kotlin.
  */
-fun startDrive(logger: Logger, deck: VerbDeck) {
+fun startControlChannel(logger: Logger, deck: VerbDeck) {
   // Create client
   val ftlEndpoint = parseSocket(System.getenv("FTL_ENDPOINT"))
   var routerClient: VerbServiceGrpcKt.VerbServiceCoroutineStub? = null
@@ -24,7 +24,7 @@ fun startDrive(logger: Logger, deck: VerbDeck) {
 
   // Start the gRPC servers.
   val pluginEndpoint = parseSocket(System.getenv("FTL_PLUGIN_ENDPOINT") ?: "127.0.0.1:8081")!!
-  logger.info("Starting FTL.kotlin-drive gRPC services on $pluginEndpoint")
+  logger.info("Starting FTL.drive[kotlin] gRPC services on $pluginEndpoint")
 
   val server = NettyServerBuilder
     .forAddress(pluginEndpoint)

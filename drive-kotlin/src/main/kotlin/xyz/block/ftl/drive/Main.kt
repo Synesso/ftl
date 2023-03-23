@@ -2,8 +2,11 @@ package xyz.block.ftl.drive
 
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
+import org.eclipse.jetty.server.handler.ContextHandler
+import org.eclipse.jetty.server.handler.HandlerList
+import org.eclipse.jetty.server.handler.ResourceHandler
 import org.eclipse.jetty.servlet.ServletHandler
-import xyz.block.ftl.control.startDrive
+import xyz.block.ftl.control.startControlChannel
 import xyz.block.ftl.drive.transport.DriveServlet
 import xyz.block.ftl.drive.verb.VerbDeck
 
@@ -24,11 +27,21 @@ fun main(args: Array<String>) {
   server.connectors = arrayOf(ServerConnector(server).apply {
     port = 8080
   })
-  server.handler = ServletHandler().apply {
-    addServletWithMapping(DriveServlet::class.java, "/")
+  server.handler = HandlerList().apply {
+    addHandler(ContextHandler("/_ftl").apply {
+      handler = ResourceHandler().apply {
+        resourceBase = "src/main/resources/web"
+      }
+    })
+    addHandler(ServletHandler().apply {
+      addServletWithMapping(DriveServlet::class.java, "/")
+    })
   }
+
   VerbDeck.init("com.squareup.ftldemo")
 
-  startDrive(logger, VerbDeck.instance)
+  if (System.getenv("FTL_ENDPOINT") != null) {
+    startControlChannel(logger, VerbDeck.instance)
+  }
   server.start()
 }
