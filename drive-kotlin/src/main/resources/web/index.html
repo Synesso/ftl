@@ -30,9 +30,22 @@
 <section id="app">
   <section class="workspace">
     <section class="module">
-      <article class="verb" v-for="verb in verbs">{{ verb.name }}</article>
+      <article class="verb"
+               :class="{ zoomed: (activeVerb == verb.key) }"
+               @click="zoomIn($event, verb)"
+               v-for="verb in verbs">{{ verb.name }}</article>
     </section>
   </section>
+
+  <nav class="floatmenu">
+    <ul>
+      <li>realms</li>
+      <li>modules</li>
+      <li>verbs</li>
+      <li>verb</li>
+    </ul>
+  </nav>
+
   <nav class="botmenu">
     <ul>
       <li>option 1</li>
