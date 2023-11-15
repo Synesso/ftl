@@ -6,6 +6,7 @@ import xyz.block.ftl.Context
 import xyz.block.ftl.Ingress
 import xyz.block.ftl.Method
 import xyz.block.ftl.Verb
+import xyz.block.ftl.Result
 
 class InvalidInput(val field: String) : Exception()
 
@@ -16,8 +17,8 @@ class Echo {
   @Throws(InvalidInput::class)
   @Verb
   @Ingress(Method.GET, "/echo")
-  fun echo(context: Context, req: EchoRequest): EchoResponse {
+  fun echo(context: Context, req: EchoRequest): Result<EchoResponse> {
     val response = context.call(TimeModuleClient::time, TimeRequest())
-    return EchoResponse(message = "Hello, ${req.name}! The time is ${response.time}.")
+    return Result.of(EchoResponse(message = "Hello, ${req.name}! The time is ${response.time}."))
   }
 }

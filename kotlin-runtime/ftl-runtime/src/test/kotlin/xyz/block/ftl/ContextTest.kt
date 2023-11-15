@@ -12,9 +12,9 @@ data class EchoResponse(val text: String)
 
 class Echo {
   @Verb
-  fun echo(context: Context, req: EchoRequest): EchoResponse {
+  fun echo(context: Context, req: EchoRequest): Result<EchoResponse> {
     val time = context.call(Time::time, TimeRequest())
-    return EchoResponse("Hello ${req.user}, the time is ${time.time}!")
+    return Result.success(EchoResponse("Hello ${req.user}, the time is ${time.getOrNull()?.time}!"))
   }
 }
 
@@ -25,8 +25,8 @@ val staticTime = OffsetDateTime.now()
 
 class Time {
   @Verb
-  fun time(context: Context, req: TimeRequest): TimeResponse {
-    return TimeResponse(staticTime)
+  fun time(context: Context, req: TimeRequest): Result<TimeResponse> {
+    return Result.success(TimeResponse(staticTime))
   }
 }
 
@@ -39,11 +39,11 @@ class ContextTest {
       return listOf(
         TestCase(
           invoke = { ctx -> ctx.call(Echo::echo, EchoRequest("Alice")) },
-          expected = EchoResponse("Hello Alice, the time is $staticTime!"),
+          expected = Result.success(EchoResponse("Hello Alice, the time is $staticTime!")),
         ),
         TestCase(
           invoke = { ctx -> ctx.call(Time::time, TimeRequest()) },
-          expected = TimeResponse(staticTime),
+          expected = Result.success(TimeResponse(staticTime)),
         ),
       )
     }
@@ -58,6 +58,6 @@ class ContextTest {
     val routingClient = LoopbackVerbServiceClient(registry)
     val context = Context("xyz.block", routingClient)
     val result = testCase.invoke(context)
-    assertEquals(result, testCase.expected)
+    assertEquals(testCase.expected, result)
   }
 }

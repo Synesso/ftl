@@ -67,7 +67,7 @@ class RegistryTest {
     registry.register(ExampleVerb::class)
     val context = Context("xyz.block.ftl", LoopbackVerbServiceClient(registry))
     val result = registry.invoke(context, verbRef, gson.toJson(VerbRequest("test")))
-    assertEquals(result, gson.toJson(VerbResponse("test")))
+    assertEquals(gson.toJson(VerbResponse("test")), result)
   }
 
   // For some reason "RenamedVerb" does not show up in the scan result.

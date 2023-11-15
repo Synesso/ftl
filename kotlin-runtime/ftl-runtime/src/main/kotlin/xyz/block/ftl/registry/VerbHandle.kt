@@ -1,6 +1,7 @@
 package xyz.block.ftl.registry
 
 import xyz.block.ftl.Context
+import xyz.block.ftl.Result
 import xyz.block.ftl.logging.Logging
 import xyz.block.ftl.serializer.makeGson
 import kotlin.reflect.KClass
@@ -32,7 +33,12 @@ internal class VerbHandle<Resp>(
       }
     }
 
-    val result = verbFunction.callBy(arguments)
+    val result = try {
+      verbFunction.callBy(arguments)
+    } catch (t: Throwable) {
+      logger.error("Error invoking ${verbClass.simpleName}.${verbFunction.name}", t)
+      Result.failure(t)
+    }
     return gson.toJson(result)
   }
 
