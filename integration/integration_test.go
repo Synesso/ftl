@@ -104,6 +104,29 @@ func TestIntegration(t *testing.T) {
 			run(".", "ftl", "schema", "generate", "integration/testdata/schema-generate", "build/schema-generate"),
 			filesExist(file{"build/schema-generate/test.txt", "olleh"}),
 		}},
+		{name: "AliasedIngress", assertions: assertions{
+			setUpTestModule(
+				filepath.Join(modulesDir, "ftl-module-echo"),
+				"integration/testdata/ingress/kotlin",
+				"src/main/kotlin/ftl/echo",
+			),
+			run(".", "ftl", "deploy", filepath.Join(modulesDir, "ftl-module-echo")),
+			// Call with non-aliased field name
+			run(".", "curl", "-i", "-H", "\"Content-Type: application/json\"", "-d", "'{\"name\": \"Alice\"}'", "http://localhost:8892/ingress/echo"),
+			// Call with aliased field name
+			run(".", "curl", "-i", "-H", "\"Content-Type: application/json\"", "-d", "'{\"n\": \"Alice\"}'", "http://localhost:8892/ingress/echo"),
+
+			setUpTestModule(
+				"examples",
+				"integration/testdata/ingress/go",
+				"time",
+			),
+			run("examples", "ftl", "deploy", "time"),
+			// Call with non-aliased field name
+			run(".", "curl", "-i", "-H", "\"Content-Type: application/json\"", "-d", "'{\"message\": \"hi\"}'", "http://localhost:8892/ingress/time"),
+			// Call with aliased field name
+			run(".", "curl", "-i", "-H", "\"Content-Type: application/json\"", "-d", "'{\"m\": \"hi\"}'", "http://localhost:8892/ingress/time"),
+		}},
 	}
 
 	// Build FTL binary
@@ -366,5 +389,17 @@ func (l *logWriter) Write(p []byte) (n int, err error) {
 			l.buffer = l.buffer[:0]
 			p = p[index+1:]
 		}
+	}
+}
+
+func setUpTestModule(dir string, testdataPath string, targetPath string) assertion {
+	return func(t testing.TB, ic itContext) error {
+		err := scaffolder.Scaffold(
+			filepath.Join(ic.rootDir, testdataPath),
+			filepath.Join(dir, targetPath),
+			ic,
+		)
+		assert.NoError(t, err)
+		return nil
 	}
 }
